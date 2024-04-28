@@ -1,5 +1,9 @@
 package webserver;
 
+import ch.qos.logback.core.util.ContentTypeUtil;
+import model.User;
+import util.HttpRequestUtils;
+
 import java.io.DataOutputStream;
 import java.io.File;
 import java.io.IOException;
@@ -7,6 +11,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.util.Map;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,9 +36,19 @@ public class RequestHandler extends Thread {
 
             String reqUri = requestHeader.getUri();
             byte[] body;
-            if (reqUri.equals("/index.html")) {
+            if (reqUri.equals("/index.html") || reqUri.endsWith(".html")) {
                 body = Files.readAllBytes(new File("./webapp" + reqUri).toPath());
-            } else {
+            } else if (reqUri.contains("/user/create")){
+                String[] split = reqUri.split("\\?");
+                String requestPath = split[0];
+                String params = split[1];
+                if(requestPath.equals("/user/create") && split.length == 2){
+                    Map<String, String> stringStringMap = HttpRequestUtils.parseQueryString(params);
+                    User user = new User(stringStringMap.get("userId"), stringStringMap.get("password"), stringStringMap.get("name"), stringStringMap.get("email"));
+                    log.debug("User : {}", user.toString());
+                }
+                body = "Hello World".getBytes();
+            }else {
                 body = "Hello World".getBytes();
             }
             response200Header(dos, body.length);
@@ -41,6 +57,8 @@ public class RequestHandler extends Thread {
             log.error(e.getMessage());
         }
     }
+
+
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
         try {
