@@ -9,6 +9,8 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import util.IOUtils;
+
 public class RequestHeader {
 
     private static final Logger log = LoggerFactory.getLogger(RequestHeader.class);
@@ -17,6 +19,7 @@ public class RequestHeader {
     private String method;
     private String uri;
     private String protocol;
+    private String body;
 
 
     public RequestHeader(InputStream in) throws IOException {
@@ -35,6 +38,10 @@ public class RequestHeader {
         return protocol;
     }
 
+    public String getBody() {
+        return body;
+    }
+
     private void parseHeader(InputStream in) throws IOException {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
         String line = bufferedReader.readLine();
@@ -44,8 +51,14 @@ public class RequestHeader {
             while (!line.isEmpty()) {
                 line = bufferedReader.readLine();
                 parseHeaderLine(line);
-                log.debug("{}", line);
+                log.debug("header: {}", line);
             }
+        }
+        if(getContentLength() > 0){
+            char[] body = new char[getContentLength()];
+            String bodyString = IOUtils.readData(bufferedReader, body.length);
+            this.body = bodyString;
+            log.debug("body: {}", this.body);
         }
 
     }
@@ -66,4 +79,7 @@ public class RequestHeader {
         }
     }
 
+    public int getContentLength() {
+        return Integer.parseInt(headers.getOrDefault("Content-Length", "0"));
+    }
 }

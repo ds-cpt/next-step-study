@@ -3,6 +3,7 @@ package webserver;
 import ch.qos.logback.core.util.ContentTypeUtil;
 import model.User;
 import util.HttpRequestUtils;
+import util.IOUtils;
 
 import java.io.DataOutputStream;
 import java.io.File;
@@ -39,14 +40,25 @@ public class RequestHandler extends Thread {
             if (reqUri.equals("/index.html") || reqUri.endsWith(".html")) {
                 body = Files.readAllBytes(new File("./webapp" + reqUri).toPath());
             } else if (reqUri.contains("/user/create")){
-                String[] split = reqUri.split("\\?");
-                String requestPath = split[0];
-                String params = split[1];
-                if(requestPath.equals("/user/create") && split.length == 2){
-                    Map<String, String> stringStringMap = HttpRequestUtils.parseQueryString(params);
-                    User user = new User(stringStringMap.get("userId"), stringStringMap.get("password"), stringStringMap.get("name"), stringStringMap.get("email"));
-                    log.debug("User : {}", user.toString());
+                //create handling function for post method
+                if(requestHeader.getMethod().equals("POST")){
+                    if(reqUri.equals("/user/create")){
+                        Map<String, String> stringStringMap = HttpRequestUtils.parseQueryString(requestHeader.getBody());
+                        User user = new User(stringStringMap.get("userId"), stringStringMap.get("password"), stringStringMap.get("name"), stringStringMap.get("email"));
+                        log.debug("User : {}", user.toString());
+                    }
                 }
+                if(requestHeader.getMethod().equals("GET")){
+                    String[] split = reqUri.split("\\?");
+                    String requestPath = split[0];
+                    String params = split[1];
+                    if(requestPath.equals("/user/create") && split.length == 2){
+                        Map<String, String> stringStringMap = HttpRequestUtils.parseQueryString(params);
+                        User user = new User(stringStringMap.get("userId"), stringStringMap.get("password"), stringStringMap.get("name"), stringStringMap.get("email"));
+                        log.debug("User : {}", user.toString());
+                    }
+                }
+
                 body = "Hello World".getBytes();
             }else {
                 body = "Hello World".getBytes();
