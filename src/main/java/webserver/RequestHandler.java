@@ -58,8 +58,9 @@ public class RequestHandler extends Thread {
                         log.debug("User : {}", user.toString());
                     }
                 }
+                response302Header(dos, "/index.html");
+                return;
 
-                body = "Hello World".getBytes();
             }else {
                 body = "Hello World".getBytes();
             }
@@ -70,7 +71,15 @@ public class RequestHandler extends Thread {
         }
     }
 
-
+    private void response302Header(DataOutputStream dos, String location) {
+        try {
+            dos.writeBytes("HTTP/1.1 302 Redirect \r\n");
+            dos.writeBytes("Location: " + location + "\r\n");
+            dos.writeBytes("\r\n");
+        } catch (IOException e) {
+            log.error(e.getMessage());
+        }
+    }
 
     private void response200Header(DataOutputStream dos, int lengthOfBodyContent) {
         try {
