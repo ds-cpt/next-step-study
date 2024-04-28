@@ -7,6 +7,8 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.file.Files;
+import java.util.Collection;
+import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -55,7 +57,42 @@ public class RequestHandler extends Thread {
 
 				response302Header(dos, "/index.html");
 				return;
-			} else if (reqUri.contains("/user/create")) {
+			} else if(reqUri.equals("/user/list")){
+				if (requestHeader.getMethod().equals("GET")) {
+					Map<String, String> cookies = HttpRequestUtils.parseCookies(requestHeader.getHeader("Cookie"));
+					if (Boolean.parseBoolean(cookies.get("logined"))) {
+						Collection<User> all = DataBase.findAll();
+
+						StringBuilder sb = new StringBuilder();
+						sb.append("<table border='1'>");
+						sb.append("<tr>");
+						sb.append("<th>userId</th>");
+						sb.append("<th>name</th>");
+						sb.append("<th>email</th>");
+						sb.append("</tr>");
+						for (User user : all) {
+							sb.append("<tr>");
+							sb.append("<td>" + user.getUserId() + "</td>");
+							sb.append("<td>" + user.getName() + "</td>");
+							sb.append("<td>" + user.getEmail() + "</td>");
+							sb.append("</tr>");
+						}
+						sb.append("</table>");
+
+
+						body = sb.toString().getBytes();
+						response200Header(dos, body.length);
+						responseBody(dos, body);
+						return;
+					} else {
+						response302Header(dos, "/user/login.html");
+						return;
+					}
+				}
+				response302Header(dos, "/index.html");
+				return;
+
+			}else if (reqUri.contains("/user/create")) {
 
 				if (requestHeader.getMethod().equals("POST")) {
 					if (reqUri.equals("/user/create")) {

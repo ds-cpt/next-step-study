@@ -82,4 +82,8 @@ public class RequestHeader {
     public int getContentLength() {
         return Integer.parseInt(headers.getOrDefault("Content-Length", "0"));
     }
+
+    public String getHeader(String key) {
+        return headers.get(key);
+    }
 }
