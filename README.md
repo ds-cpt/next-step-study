@@ -1,24 +1,37 @@
-# 자바 웹 프로그래밍 Next Step 스터디
+# 실습을 위한 개발 환경 세팅
+* https://github.com/slipp/web-application-server 프로젝트를 자신의 계정으로 Fork한다. Github 우측 상단의 Fork 버튼을 클릭하면 자신의 계정으로 Fork된다.
+* Fork한 프로젝트를 eclipse 또는 터미널에서 clone 한다.
+* Fork한 프로젝트를 eclipse로 import한 후에 Maven 빌드 도구를 활용해 eclipse 프로젝트로 변환한다.(mvn eclipse:clean eclipse:eclipse)
+* 빌드가 성공하면 반드시 refresh(fn + f5)를 실행해야 한다.
 
-신한DS 공통플랫폼팀에서 진행하는 "자바 웹 프로그래밍 Next Step" 독서 스터디입니다. 
+# 웹 서버 시작 및 테스트
+* webserver.WebServer 는 사용자의 요청을 받아 RequestHandler에 작업을 위임하는 클래스이다.
+* 사용자 요청에 대한 모든 처리는 RequestHandler 클래스의 run() 메서드가 담당한다.
+* WebServer를 실행한 후 브라우저에서 http://localhost:8080으로 접속해 "Hello World" 메시지가 출력되는지 확인한다.
 
-본 스터디는 자바 웹 개발에 필요한 심화 지식을 습득하고, 함께 성장하는 것을 목표로 합니다.
+# 각 요구사항별 학습 내용 정리
+* 구현 단계에서는 각 요구사항을 구현하는데 집중한다. 
+* 구현을 완료한 후 구현 과정에서 새롭게 알게된 내용, 궁금한 내용을 기록한다.
+* 각 요구사항을 구현하는 것이 중요한 것이 아니라 구현 과정을 통해 학습한 내용을 인식하는 것이 배움에 중요하다. 
 
-## 📆 스터디 일정
-- **주기**: 매주 일요일
-- **시간**: 22:00 (KST)
-- **장소**: Google Meet (회의 링크는 스터디 멤버에게 별도로 공유)
+### 요구사항 1 - http://localhost:8080/index.html로 접속시 응답
+* 소켓으로 요청을 받아들이고, 응답을 보내는 과정을 이해할 수 있었다.
+* js랑 css도 해보려했지만 header가 달라서인지 잘안됨
 
-## 📖 진행 방식
-매주 2장씩 순차적으로 읽으며, 각 장을 읽고 나서는 다음의 활동을 진행합니다:
-1. **요약 정리**: 각 장의 핵심 내용을 요약해서 Notion에 문서화합니다.
-2. **실습 코드**: 책에서 다루는 예제 코드를 직접 실행해보고, 변형해보며 학습합니다.
-3. **토론**: 장별 핵심 주제나 이해가 어려운 부분에 대해 토론합니다.
+### 요구사항 2 - get 방식으로 회원가입
+* 
 
-## 📚 참고 자료
-- **도서**: [자바 웹 프로그래밍 Next Step](http://www.yes24.com/Product/Goods/83849117)
-- **코드**: [ds-cpt/next-step-study](https://github.com/ds-cpt/next-step-study)
-- **스터디 자료**: [Notion](https://www.notion.so/04_2-NextStep-77114c701a0543ea8f0e3d33a878c662?pvs=4)
+### 요구사항 3 - post 방식으로 회원가입
+* 
 
+### 요구사항 4 - redirect 방식으로 이동
+* 
 
-**신한DS 공통플랫폼팀** - 함께 성장하고, 배움을 나누는 곳
+### 요구사항 5 - cookie
+* 
+
+### 요구사항 6 - stylesheet 적용
+* 
+
+### heroku 서버에 배포 후
+* 
