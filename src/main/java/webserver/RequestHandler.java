@@ -39,13 +39,25 @@ public class RequestHandler extends Thread {
 			byte[] body;
 			if (reqUri.equals("/index.html") || reqUri.endsWith(".html")) {
 				body = Files.readAllBytes(new File("./webapp" + reqUri).toPath());
+			}  else if (reqUri.startsWith("/user/create")) {
+				if (requestHeader.getMethod().equals("POST")) {
+					if (reqUri.equals("/user/create")) {
+						Map<String, String> stringStringMap = HttpRequestUtils.parseQueryString(
+							requestHeader.getBody());
+						User user = new User(stringStringMap.get("userId"), stringStringMap.get("password"),
+							stringStringMap.get("name"), stringStringMap.get("email"));
+						DataBase.addUser(user);
+					}
+				}
+				response302Header(dos, "/index.html");
+				return;
 			} else if (reqUri.equals("/user/login")) {
 				if (requestHeader.getMethod().equals("POST")) {
 					Map<String, String> stringStringMap = HttpRequestUtils.parseQueryString(requestHeader.getBody());
 					User user = new User(stringStringMap.get("userId"), stringStringMap.get("password"), null, null);
 					User userById = DataBase.findUserById(user.getUserId());
 					if (userById == null) {
-						response302Header(dos, "/user/login_failed.html", "logined=false");
+						responseResource(out, "/user/login_failed.html");
 						return;
 					} else if (userById.getPassword().equals(user.getPassword())) {
 						response302Header(dos, "/index.html", "logined=true");
@@ -54,7 +66,7 @@ public class RequestHandler extends Thread {
 					log.debug("User : {}", user.toString());
 				}
 
-				response302Header(dos, "/index.html");
+				responseResource(out, "/user/login_failed.html");
 				return;
 			} else if (reqUri.equals("/user/list")) {
 				if (requestHeader.getMethod().equals("GET")) {
@@ -88,19 +100,7 @@ public class RequestHandler extends Thread {
 				response302Header(dos, "/index.html");
 				return;
 
-			} else if (reqUri.contains("/user/create")) {
-				if (requestHeader.getMethod().equals("POST")) {
-					if (reqUri.equals("/user/create")) {
-						Map<String, String> stringStringMap = HttpRequestUtils.parseQueryString(
-							requestHeader.getBody());
-						User user = new User(stringStringMap.get("userId"), stringStringMap.get("password"),
-							stringStringMap.get("name"), stringStringMap.get("email"));
-						DataBase.addUser(user);
-					}
-				}
-				response302Header(dos, "/index.html");
-				return;
-			} else if (reqUri.endsWith(".css") || reqUri.endsWith(".js")) {
+			}else if (reqUri.endsWith(".css") || reqUri.endsWith(".js")) {
 				File file = new File("./webapp" + reqUri);
 				body = Files.readAllBytes(file.toPath());
 				String contentType = "text/css";
@@ -109,10 +109,8 @@ public class RequestHandler extends Thread {
 				}
 				response200Header(dos, body.length, contentType);
 			} else {
-				body = "Hello World".getBytes();
+				responseResource(out, reqUri);
 			}
-			response200Header(dos, body.length);
-			responseBody(dos, body);
 		} catch (IOException e) {
 			log.error(e.getMessage());
 		}
@@ -128,11 +126,24 @@ public class RequestHandler extends Thread {
 		}
 	}
 
+	private void responseResource(OutputStream out, String url){
+		DataOutputStream dos = new DataOutputStream(out);
+		byte[] body;
+		try {
+			body = Files.readAllBytes(new File("./webapp" + url).toPath());
+			response200Header(dos, body.length);
+			responseBody(dos, body);
+		} catch (IOException e) {
+			log.error(e.getMessage());
+		}
+
+	}
+
 	private void response302Header(DataOutputStream dos, String location, String cookie) {
 		try {
 			dos.writeBytes("HTTP/1.1 302 Redirect \r\n");
-			dos.writeBytes("Location: " + location + "\r\n");
 			dos.writeBytes("Set-Cookie: " + cookie + "; Domain=localhost; Path=/" + "\r\n");
+			dos.writeBytes("Location: " + location + "\r\n");
 			dos.writeBytes("\r\n");
 		} catch (IOException e) {
 			log.error(e.getMessage());

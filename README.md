@@ -22,10 +22,12 @@
 * 
 
 ### 요구사항 3 - post 방식으로 회원가입
-* 
+* 본문의 길이가 Content-Length 필드로 전달됨
 
 ### 요구사항 4 - redirect 방식으로 이동
-* 
+* Post 후 redirect가 아닌 방법으로 url을 이동 하면, 새로고침 시 POST요청이 중복해서 제출됨 
+* redirect를 사용하면, 새로고침 시 중복 제출되지 않음
+
 
 ### 요구사항 5 - cookie
 * 
