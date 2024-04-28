@@ -8,7 +8,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.file.Files;
 import java.util.Collection;
-import java.util.List;
 import java.util.Map;
 
 import org.slf4j.Logger;
@@ -57,12 +56,11 @@ public class RequestHandler extends Thread {
 
 				response302Header(dos, "/index.html");
 				return;
-			} else if(reqUri.equals("/user/list")){
+			} else if (reqUri.equals("/user/list")) {
 				if (requestHeader.getMethod().equals("GET")) {
 					Map<String, String> cookies = HttpRequestUtils.parseCookies(requestHeader.getHeader("Cookie"));
 					if (Boolean.parseBoolean(cookies.get("logined"))) {
 						Collection<User> all = DataBase.findAll();
-
 						StringBuilder sb = new StringBuilder();
 						sb.append("<table border='1'>");
 						sb.append("<tr>");
@@ -79,21 +77,18 @@ public class RequestHandler extends Thread {
 						}
 						sb.append("</table>");
 
-
 						body = sb.toString().getBytes();
 						response200Header(dos, body.length);
 						responseBody(dos, body);
-						return;
 					} else {
 						response302Header(dos, "/user/login.html");
-						return;
 					}
+					return;
 				}
 				response302Header(dos, "/index.html");
 				return;
 
-			}else if (reqUri.contains("/user/create")) {
-
+			} else if (reqUri.contains("/user/create")) {
 				if (requestHeader.getMethod().equals("POST")) {
 					if (reqUri.equals("/user/create")) {
 						Map<String, String> stringStringMap = HttpRequestUtils.parseQueryString(
@@ -103,10 +98,16 @@ public class RequestHandler extends Thread {
 						DataBase.addUser(user);
 					}
 				}
-
 				response302Header(dos, "/index.html");
 				return;
-
+			} else if (reqUri.endsWith(".css") || reqUri.endsWith(".js")) {
+				File file = new File("./webapp" + reqUri);
+				body = Files.readAllBytes(file.toPath());
+				String contentType = "text/css";
+				if (reqUri.endsWith(".js")) {
+					contentType = "application/javascript";
+				}
+				response200Header(dos, body.length, contentType);
 			} else {
 				body = "Hello World".getBytes();
 			}
@@ -132,6 +133,17 @@ public class RequestHandler extends Thread {
 			dos.writeBytes("HTTP/1.1 302 Redirect \r\n");
 			dos.writeBytes("Location: " + location + "\r\n");
 			dos.writeBytes("Set-Cookie: " + cookie + "; Domain=localhost; Path=/" + "\r\n");
+			dos.writeBytes("\r\n");
+		} catch (IOException e) {
+			log.error(e.getMessage());
+		}
+	}
+
+	private void response200Header(DataOutputStream dos, int lengthOfBodyContent, String contentType) {
+		try {
+			dos.writeBytes("HTTP/1.1 200 OK \r\n");
+			dos.writeBytes("Content-Type: " + contentType + ";charset=utf-8\r\n");
+			dos.writeBytes("Content-Length: " + lengthOfBodyContent + "\r\n");
 			dos.writeBytes("\r\n");
 		} catch (IOException e) {
 			log.error(e.getMessage());
