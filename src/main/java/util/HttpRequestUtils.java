@@ -1,6 +1,7 @@
 package util;
 
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Map;
 import java.util.stream.Collectors;
 
@@ -24,6 +25,19 @@ public class HttpRequestUtils {
      */
     public static Map<String, String> parseCookies(String cookies) {
         return parseValues(cookies, ";");
+    }
+
+    private static Map<String, String> parseValuesByCjm(String values, String separator) {
+        Map<String, String> map = new HashMap<String, String>();
+
+        String[] arr = values.split(separator);
+        for(String queryString : arr){
+            if(queryString.contains("=")) continue; //원래는 exception 처리해야됨
+            String[] temp = queryString.split("=");
+            if(temp.length > 2) continue; //원래는 exception 처리해야됨
+            map.put((String) temp[0], (String) temp[1]);
+        }
+        return map;
     }
 
     private static Map<String, String> parseValues(String values, String separator) {

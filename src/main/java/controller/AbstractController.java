@@ -11,8 +11,10 @@ public abstract class AbstractController implements Controller {
 
         if (method.isPost()) {
             doPost(request, response);
-        } else {
+        } else if (method.isGet()){
             doGet(request, response);
+        } else {
+            new Exception();
         }
     }
 

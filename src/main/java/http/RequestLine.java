@@ -14,10 +14,9 @@ public class RequestLine {
     
 
     public RequestLine(String requestLine) {
-    	log.debug("request line : {}", requestLine);
 		String[] tokens = requestLine.split(" ");
 		this.method = HttpMethod.valueOf(tokens[0]);
-		
+
 		String[] url = tokens[1].split("\\?");
 		this.path = url[0];
 		
