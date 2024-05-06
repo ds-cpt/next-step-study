@@ -9,33 +9,30 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import type.HttpMethod;
+import util.HttpRequestUtils;
 import util.IOUtils;
 
-public class RequestHeader {
+public class HttpRequest {
 
-    private static final Logger log = LoggerFactory.getLogger(RequestHeader.class);
+    private static final Logger log = LoggerFactory.getLogger(HttpRequest.class);
 
     private final Map<String, String> headers = new HashMap<>();
-    private String method;
-    private String uri;
-    private String protocol;
     private String body;
+    private RequestLine requestLine;
 
 
-    public RequestHeader(InputStream in) throws IOException {
+    public HttpRequest(InputStream in) throws IOException {
         parseHeader(in);
     }
 
-    public String getMethod() {
-        return method;
+    public HttpMethod getMethod() {
+        return requestLine.getMethod();
     }
 
-    public String getUri() {
-        return uri;
-    }
 
     public String getProtocol() {
-        return protocol;
+        return requestLine.getProtocol();
     }
 
     public String getBody() {
@@ -46,7 +43,7 @@ public class RequestHeader {
         BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(in));
         String line = bufferedReader.readLine();
         if (line != null) {
-            parseRequestLine(line);
+            requestLine = new RequestLine(line);
             log.debug("{}", line);
             while (!line.isEmpty()) {
                 line = bufferedReader.readLine();
@@ -58,19 +55,13 @@ public class RequestHeader {
             char[] body = new char[getContentLength()];
             String bodyString = IOUtils.readData(bufferedReader, body.length);
             this.body = bodyString;
+            this.requestLine.getParams().putAll(HttpRequestUtils.parseQueryString(bodyString));
             log.debug("body: {}", this.body);
         }
 
     }
 
-    private void parseRequestLine(String line) {
-        String[] tokens = line.split(" ");
-        if (tokens.length >= 3) {
-            method = tokens[0];
-            uri = tokens[1];
-            protocol = tokens[2];
-        }
-    }
+
 
     private void parseHeaderLine(String line) {
         String[] tokens = line.split(":");
@@ -85,5 +76,13 @@ public class RequestHeader {
 
     public String getHeader(String key) {
         return headers.get(key);
+    }
+
+    public String getParameter(String userId) {
+        return requestLine.getParameter(userId);
+    }
+
+    public String getPath() {
+        return requestLine.getPath();
     }
 }
