@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import core.db.DataBase;
-import core.mvc.Controller;
+import next.webserver.Controller;
 import next.model.User;
 
 public class ProfileController implements Controller {

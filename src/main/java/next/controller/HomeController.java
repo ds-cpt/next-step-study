@@ -4,7 +4,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import core.db.DataBase;
-import core.mvc.Controller;
+import next.webserver.Controller;
 
 public class HomeController implements Controller {
     @Override

@@ -7,7 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import core.db.DataBase;
-import core.mvc.Controller;
+import next.webserver.Controller;
 import next.model.User;
 
 public class UpdateUserController implements Controller {

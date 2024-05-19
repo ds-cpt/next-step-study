@@ -5,7 +5,7 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
 import core.db.DataBase;
-import core.mvc.Controller;
+import next.webserver.Controller;
 import next.model.User;
 
 public class LoginController implements Controller {
