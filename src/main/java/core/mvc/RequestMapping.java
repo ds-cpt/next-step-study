@@ -6,21 +6,17 @@ import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import next.controller.CreateAnswerController;
-import next.controller.CreateQuestionController;
-import next.controller.CreateUserController;
-import next.controller.DeleteQuestionController;
 import next.controller.HomeController;
-import next.controller.ListQuestionController;
-import next.controller.ListUserController;
-import next.controller.LoginController;
-import next.controller.LogoutController;
-import next.controller.ProfileController;
-import next.controller.QuestionController;
-import next.controller.UpdaetQuestionController;
-import next.controller.UpdateFormQuestionController;
-import next.controller.UpdateFormUserController;
-import next.controller.UpdateUserController;
+import next.controller.answer.AddAnswerController;
+import next.controller.answer.DeleteAnswerController;
+import next.controller.qna.ShowController;
+import next.controller.user.CreateUserController;
+import next.controller.user.ListUserController;
+import next.controller.user.LoginController;
+import next.controller.user.LogoutController;
+import next.controller.user.ProfileController;
+import next.controller.user.UpdateFormUserController;
+import next.controller.user.UpdateUserController;
 
 public class RequestMapping {
     private static final Logger logger = LoggerFactory.getLogger(DispatcherServlet.class);
@@ -37,19 +33,9 @@ public class RequestMapping {
         mappings.put("/users/create", new CreateUserController());
         mappings.put("/users/updateForm", new UpdateFormUserController());
         mappings.put("/users/update", new UpdateUserController());
-
-        mappings.put("/qna/form", new ForwardController("/qna/form.jsp"));
-        mappings.put("/qna/createQna", new CreateQuestionController());
-        mappings.put("/qna", new ListQuestionController());
-        mappings.put("/qna/show", new QuestionController());
-        mappings.put("/qna/updateForm", new UpdateFormQuestionController());
-        mappings.put("/qna/deleteAnswer", new DeleteQuestionController());
-        mappings.put("/qna/updateAnswer", new UpdaetQuestionController());
-
-        mappings.put("/answers/createAnswer", new CreateAnswerController());
-        // mappings.put("/answers/updateForm", new UpdateFormAnswerController());
-        // mappings.put("/answers/deleteAnswer", new DeleteAnswerController());
-
+        mappings.put("/qna/show", new ShowController());
+        mappings.put("/api/qna/addAnswer", new AddAnswerController());
+        mappings.put("/api/qna/deleteAnswer", new DeleteAnswerController());
 
         logger.info("Initialized Request Mapping!");
     }

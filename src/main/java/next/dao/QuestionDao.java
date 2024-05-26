@@ -4,57 +4,47 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
+import next.model.Question;
 import core.jdbc.JdbcTemplate;
 import core.jdbc.RowMapper;
-import next.model.Question;
 
 public class QuestionDao {
-	public void insert(Question question) {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate();
-		String sql = "INSERT INTO QUESTIONS VALUES (?, ?, ?, ?, ?, ?)";
-		jdbcTemplate.update(sql, question.getQuestionId(), question.getWriter(), question.getTitle(),
-			question.getContents(), question.getCreatedDate(), question.getCountOfAnswer());
-	}
+    public List<Question> findAll() {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate();
+        String sql = "SELECT questionId, writer, title, createdDate, countOfAnswer FROM QUESTIONS "
+                + "order by questionId desc";
 
-	public List<Question> findAll() {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate();
-		String sql = "SELECT questionId, writer, title, contents, createdDate, countOfAnswer FROM QUESTIONS";
+        RowMapper<Question> rm = new RowMapper<Question>() {
+            @Override
+            public Question mapRow(ResultSet rs) throws SQLException {
+                return new Question(rs.getLong("questionId"), rs.getString("writer"), rs.getString("title"), null,
+                        rs.getTimestamp("createdDate"), rs.getInt("countOfAnswer"));
+            }
 
-		RowMapper<Question> rm = new RowMapper<Question>() {
-			@Override
-			public Question mapRow(ResultSet rs) throws SQLException {
-				return new Question(rs.getString("questionId"), rs.getString("writer"), rs.getString("title"),
-					rs.getString("contents"), rs.getString("createdDate"), rs.getInt("countOfAnswer"));
-			}
-		};
+        };
 
-		return jdbcTemplate.query(sql, rm);
-	}
+        return jdbcTemplate.query(sql, rm);
+    }
 
-	public Question findById(String questionId) {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate();
-		String sql = "SELECT questionId, writer, title, contents, createdDate, countOfAnswer FROM QUESTIONS WHERE questionId = ?";
-		RowMapper<Question> rm = new RowMapper<Question>() {
-			@Override
-			public Question mapRow(ResultSet rs) throws SQLException {
-				return new Question(rs.getString("questionId"), rs.getString("writer"), rs.getString("title"),
-					rs.getString("contents"), rs.getString("createdDate"), rs.getInt("countOfAnswer"));
-			}
-		};
+    public Question findById(long questionId) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate();
+        String sql = "SELECT questionId, writer, title, contents, createdDate, countOfAnswer FROM QUESTIONS "
+                + "WHERE questionId = ?";
 
-		return jdbcTemplate.queryForObject(sql, rm, questionId);
-	}
+        RowMapper<Question> rm = new RowMapper<Question>() {
+            @Override
+            public Question mapRow(ResultSet rs) throws SQLException {
+                return new Question(rs.getLong("questionId"), rs.getString("writer"), rs.getString("title"),
+                        rs.getString("contents"), rs.getTimestamp("createdDate"), rs.getInt("countOfAnswer"));
+            }
+        };
 
-	public void update(Question questionFromDb) {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate();
-		String sql = "UPDATE QUESTIONS set writer = ?, title = ?, contents = ?, createdDate = ?, countOfAnswer = ? WHERE questionId = ?";
-		jdbcTemplate.update(sql, questionFromDb.getWriter(), questionFromDb.getTitle(), questionFromDb.getContents(),
-			questionFromDb.getCreatedDate(), questionFromDb.getCountOfAnswer(), questionFromDb.getQuestionId());
-	}
+        return jdbcTemplate.queryForObject(sql, rm, questionId);
+    }
 
-	public void delete(String questionId) {
-		JdbcTemplate jdbcTemplate = new JdbcTemplate();
-		String sql = "DELETE FROM QUESTIONS WHERE questionId = ?";
-		jdbcTemplate.update(sql, questionId);
-	}
+    public void update(Question question) {
+        JdbcTemplate jdbcTemplate = new JdbcTemplate();
+        String sql = "UPDATE QUESTIONS set countOfAnswer = ? WHERE questionId = ?";
+        jdbcTemplate.update(sql, question.getCountOfAnswer(), question.getQuestionId());
+    }
 }
