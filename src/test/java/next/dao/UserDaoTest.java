@@ -17,9 +17,7 @@ public class UserDaoTest {
     @Before
     public void setup() {
         ResourceDatabasePopulator populator = new ResourceDatabasePopulator();
-        ClassPathResource script = new ClassPathResource("jwp.sql");
-
-        populator.addScript(script);
+        populator.addScript(new ClassPathResource("jwp.sql"));
         DatabasePopulatorUtils.execute(populator, ConnectionManager.getDataSource());
     }
 
